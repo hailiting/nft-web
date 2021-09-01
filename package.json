@@ -2,6 +2,7 @@
   "name": "nftfy",
   "version": "0.1.0",
   "private": true,
+  "main": "index.ts",
   "description": "An ERC-721/ERC-20 Securitizer",
   "scripts": {
     "start": "react-scripts start",
