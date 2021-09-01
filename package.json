@@ -9,7 +9,7 @@
     "build": "react-scripts build",
     "build-contracts": "solcjs --abi -o src/contracts/ lib/nftfy-core/src/*.sol"
   },
-  "homepage": "/nftfy",
+  "homepage": "./",
   "author": "hailiting",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
