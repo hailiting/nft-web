@@ -2,13 +2,14 @@
   "name": "nftfy",
   "version": "0.1.0",
   "main": "index.ts",
+  "private": true,
+  "homepage": "./",
   "description": "An ERC-721/ERC-20 Securitizer",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build-contracts": "solcjs --abi -o src/contracts/ lib/nftfy-core/src/*.sol"
   },
-  "homepage": "./",
   "author": "hailiting",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
