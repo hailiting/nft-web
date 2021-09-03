@@ -1,6 +1,12 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_admin",
+        "type": "address"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -59,18 +65,18 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "qty",
+        "name": "price",
         "type": "uint256"
       }
     ],
-    "name": "Giveaway",
+    "name": "DBRPriceChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "DBRsReserved",
     "type": "event"
   },
   {
@@ -78,18 +84,25 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "qty",
+        "name": "value",
         "type": "uint256"
       }
     ],
-    "name": "Mint",
+    "name": "MaxPurchaseChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxTokenAmountChanged",
     "type": "event"
   },
   {
@@ -115,19 +128,32 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "member",
-        "type": "address"
+        "indexed": false,
+        "internalType": "string",
+        "name": "_value",
+        "type": "string"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
-        "name": "percent",
+        "name": "_id",
         "type": "uint256"
       }
     ],
-    "name": "SetMember",
+    "name": "PermanentURI",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
+      }
+    ],
+    "name": "RolledOver",
     "type": "event"
   },
   {
@@ -156,17 +182,62 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
+    "inputs": [],
+    "name": "DBRPrice",
+    "outputs": [
       {
-        "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "Withdraw",
-    "type": "event"
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "adminFeeRatio",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "admins",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "allFrozen",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -206,16 +277,69 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "baseTokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "disableAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "enableAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "flipSaleState",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "qty",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
-    "name": "buy",
+    "name": "freeze",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "freezeAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -235,56 +359,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "getAssetsByOwner",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getMyAssets",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "qty",
-        "type": "uint256"
-      }
-    ],
-    "name": "giveaway",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -313,7 +387,20 @@
   },
   {
     "inputs": [],
-    "name": "maxTx",
+    "name": "maxDBRPurchase",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxDBRs",
     "outputs": [
       {
         "internalType": "uint256",
@@ -328,19 +415,13 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "numberOfTokens",
         "type": "uint256"
       }
     ],
-    "name": "members",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
+    "name": "mintDBRs",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -351,19 +432,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nonce",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -403,7 +471,14 @@
   },
   {
     "inputs": [],
-    "name": "price",
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reserveAmount",
     "outputs": [
       {
         "internalType": "uint256",
@@ -415,10 +490,29 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "renounceOwnership",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receipt",
+        "type": "address"
+      }
+    ],
+    "name": "reserveDBRs",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reserved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -473,6 +567,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "saleIsActive",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_feeRatio",
+        "type": "uint256"
+      }
+    ],
+    "name": "setAdminFeeRatio",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -494,7 +614,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_uri",
+        "name": "baseTokenURI_",
         "type": "string"
       }
     ],
@@ -507,29 +627,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "newMax",
+        "name": "_value",
         "type": "uint256"
       }
     ],
-    "name": "setMaxTx",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "member",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "percent",
-        "type": "uint256"
-      }
-    ],
-    "name": "setMember",
+    "name": "setMaxPurchase",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -538,7 +640,20 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "newPrice",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxTokenAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_price",
         "type": "uint256"
       }
     ],
@@ -551,11 +666,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "newSupply",
+        "name": "_reserveAmount",
         "type": "uint256"
       }
     ],
-    "name": "setTotalSupply",
+    "name": "setReserveAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -563,20 +678,19 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "society",
-    "outputs": [
-      {
         "internalType": "uint256",
-        "name": "",
+        "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_tokenURI",
+        "type": "string"
       }
     ],
-    "stateMutability": "view",
+    "name": "setTokenURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -682,13 +796,6 @@
   {
     "inputs": [],
     "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "withdrawOwner",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

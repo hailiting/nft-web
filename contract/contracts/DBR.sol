@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract DBR is ERC721, Ownable {
+contract DBRTT is ERC721, Ownable {
     using SafeMath for uint256;
     uint256 public totalSupply;
     uint256 public DBRPrice = 50000000000000000; // 0.05 ETH
@@ -45,7 +45,7 @@ contract DBR is ERC721, Ownable {
         _;
     }
 
-    constructor(address _admin) ERC721("Dont Buy Rocks", "DBRT") {
+    constructor(address _admin) ERC721("Dont Buy Rocks", "DBRTT") {
         admin = _admin;
         admins[admin] = true;
         admins[msg.sender] = true;

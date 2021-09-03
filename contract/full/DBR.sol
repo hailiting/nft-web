@@ -1270,12 +1270,12 @@ pragma solidity ^0.8.0;
 
 
 
-contract DBR is ERC721, Ownable {
+contract DBRTT is ERC721, Ownable {
     using SafeMath for uint256;
     uint256 public totalSupply;
-    uint256 public tigerPrice = 50000000000000000; // 0.05 ETH
-    uint256 public maxTigerPurchase = 20;
-    uint256 public maxTigers = 10000;
+    uint256 public DBRPrice = 50000000000000000; // 0.05 ETH
+    uint256 public maxDBRPurchase = 20;
+    uint256 public maxDBRs = 10000;
     uint256 public adminFeeRatio = 0;
     uint256 public reserveAmount = 40;
     string public baseTokenURI;
@@ -1291,10 +1291,10 @@ contract DBR is ERC721, Ownable {
     // Base URI
     string private _baseTokenURI;
 
-    event TigerPriceChanged(uint256 price);
+    event DBRPriceChanged(uint256 price);
     event MaxTokenAmountChanged(uint256 value);
     event MaxPurchaseChanged(uint256 value);
-    event TigersReserved();
+    event DBRsReserved();
     event RolledOver(bool status);
     event PermanentURI(string _value, uint256 indexed _id);
 
@@ -1302,7 +1302,7 @@ contract DBR is ERC721, Ownable {
         require(!reserved, "Tokens reserved");
         _;
         reserved = true;
-        emit TigersReserved();
+        emit DBRsReserved();
     }
 
     modifier onlyAdmin() {
@@ -1310,7 +1310,7 @@ contract DBR is ERC721, Ownable {
         _;
     }
 
-    constructor(address _admin) ERC721("Naughty Tigers Costume Club", "NTCC") {
+    constructor(address _admin) ERC721("Dont Buy Rocks", "DBRTT") {
         admin = _admin;
         admins[admin] = true;
         admins[msg.sender] = true;
@@ -1324,7 +1324,7 @@ contract DBR is ERC721, Ownable {
         Address.sendValue(payable(_msgSender()), balance);
     }
 
-    function reserveTigers(address receipt) public onlyAdmin onReserve {
+    function reserveDBRs(address receipt) public onlyAdmin onReserve {
         uint256 supply = totalSupply;
         uint256 i;
         for (i; i < reserveAmount; i++) {
@@ -1337,19 +1337,19 @@ contract DBR is ERC721, Ownable {
         emit RolledOver(saleIsActive);
     }
 
-    function mintTigers(uint256 numberOfTokens) public payable {
+    function mintDBRs(uint256 numberOfTokens) public payable {
         require(saleIsActive, "Sale is not active");
         require(numberOfTokens > 0, "Cannot buy 0");
         require(
-            numberOfTokens <= maxTigerPurchase,
-            "Exceeds max number of Tigers in one transaction"
+            numberOfTokens <= maxDBRPurchase,
+            "Exceeds max number of DBRs in one transaction"
         );
         require(
-            totalSupply.add(numberOfTokens) <= maxTigers,
-            "Purchase would exceed max supply of Tigers"
+            totalSupply.add(numberOfTokens) <= maxDBRs,
+            "Purchase would exceed max supply of DBRs"
         );
         require(
-            tigerPrice.mul(numberOfTokens) == msg.value,
+            DBRPrice.mul(numberOfTokens) == msg.value,
             "Ether value sent is not correct"
         );
 
@@ -1381,8 +1381,8 @@ contract DBR is ERC721, Ownable {
     function setPrice(uint256 _price) external onlyAdmin {
         require(_price > 0, "Zero price");
 
-        tigerPrice = _price;
-        emit TigerPriceChanged(_price);
+        DBRPrice = _price;
+        emit DBRPriceChanged(_price);
     }
 
     function setMaxTokenAmount(uint256 _value) external onlyAdmin {
@@ -1391,14 +1391,14 @@ contract DBR is ERC721, Ownable {
             "Wrong value for max supply"
         );
 
-        maxTigers = _value;
+        maxDBRs = _value;
         emit MaxTokenAmountChanged(_value);
     }
 
     function setMaxPurchase(uint256 _value) external onlyAdmin {
         require(_value > 0, "Very low value");
 
-        maxTigerPurchase = _value;
+        maxDBRPurchase = _value;
         emit MaxPurchaseChanged(_value);
     }
 

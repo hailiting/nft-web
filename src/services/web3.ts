@@ -23,15 +23,12 @@ const web3 = new Web3(window.web3.currentProvider);
 
 const NFTFY_CONTRACT_RINKEBY = "0xc0D1946C1754d2F94dE4Cf52deF7162f6611316D";
 
-const NFTFY_ABI = require("../contracts/Nftfy.json");
+const DBRTT = require("../contracts/DBRTT.json");
 const WRAPPER_ABI = require("../contracts/Wrapper.json");
 const SHARES_ABI = require("../contracts/Shares.json");
-
 const ERC20_METADATA_ABI = require("../contracts/ERC20Metadata.json");
 const ERC20_ABI = require("../contracts/ERC20.json");
-// const ERC721_METADATA_ABI = require("../contracts/ERC721Metadata.json");
-const USBC_ERC721_ABI = require("../contracts/USBCERC721.json");
-// const ERC721_ENUMERABLE_ABI = require("../contracts/ERC721Enumerable.json");
+
 const ERC165_ABI = require("../contracts/ERC165.json");
 
 // const ERC721_METADATA_INTERFACE_ID = '0x5b5e139f';
@@ -170,12 +167,12 @@ export async function transferERC20(
 }
 
 async function ERC721_name(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(USBC_ERC721_ABI, contract);
+  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
   return abi.methods.name().call();
 }
 
 async function ERC721_symbol(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(USBC_ERC721_ABI, contract);
+  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
   return abi.methods.symbol().call();
 }
 
@@ -183,7 +180,7 @@ async function ERC721_tokenURI(
   contract: string,
   tokenId: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(USBC_ERC721_ABI, contract);
+  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
   return abi.methods.tokenURI(tokenId).call();
 }
 
@@ -191,8 +188,8 @@ async function ERC721_balanceOf(
   contract: string,
   address: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(USBC_ERC721_ABI, contract);
-  console.log(abi);
+  const abi = new window.web3.eth.Contract(DBRTT, contract);
+  console.log(abi, contract);
   return abi.methods.balanceOf(address).call();
 }
 
@@ -201,7 +198,8 @@ async function ERC721_tokenOfOwnerByIndex(
   address: string,
   index: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(USBC_ERC721_ABI, contract);
+  const abi = new window.web3.eth.Contract(DBRTT, contract);
+  console.log(abi);
   return abi.methods.getMyAssets(address, index).call();
 }
 
@@ -212,7 +210,7 @@ async function ERC721_safeTransferFrom(
   tokenId: string,
   data: string
 ): Promise<void> {
-  const abi = new window.web3.eth.Contract(USBC_ERC721_ABI, contract);
+  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
   return new Promise((resolve, reject) => {
     abi.methods
       .safeTransferFrom(account, address, tokenId, data)
@@ -279,7 +277,7 @@ async function Nftfy_getWrapper(
   contract: string,
   address: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(NFTFY_ABI, contract);
+  const abi = new window.web3.eth.Contract(DBRTT, contract);
   return abi.methods.getWrapper(address).call();
 }
 
