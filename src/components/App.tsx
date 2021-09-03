@@ -6,9 +6,10 @@ const { Footer, Header } = Layout;
 function App() {
   return (
     <Layout>
-      <Header className="header" style={{ color: "white" }}>
-        <h2>33333</h2>
-      </Header>
+      <Header className="header" style={{ color: "white" }}></Header>
+      <button>连接钱包</button>
+      <p>钱包余额: </p>
+      <h2></h2>
       <Footer style={{ textAlign: "center" }}></Footer>
     </Layout>
   );
