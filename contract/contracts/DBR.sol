@@ -4,10 +4,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-contract DBRTT is ERC721, Ownable {
+contract DBRS is ERC721Enumerable, Ownable {
     using SafeMath for uint256;
-    uint256 public totalSupply;
+    uint256 public DBRSTotalSupply;
     uint256 public DBRPrice = 50000000000000000; // 0.05 ETH
     uint256 public maxDBRPurchase = 20;
     uint256 public maxDBRs = 10000;
@@ -45,7 +46,7 @@ contract DBRTT is ERC721, Ownable {
         _;
     }
 
-    constructor(address _admin) ERC721("Dont Buy Rocks", "DBRTT") {
+    constructor(address _admin) ERC721("Dont Buy Rocks", "DBRS") {
         admin = _admin;
         admins[admin] = true;
         admins[msg.sender] = true;
@@ -60,7 +61,7 @@ contract DBRTT is ERC721, Ownable {
     }
 
     function reserveDBRs(address receipt) public onlyAdmin onReserve {
-        uint256 supply = totalSupply;
+        uint256 supply = DBRSTotalSupply;
         uint256 i;
         for (i; i < reserveAmount; i++) {
             _safeMint(receipt, supply + i);
@@ -80,7 +81,7 @@ contract DBRTT is ERC721, Ownable {
             "Exceeds max number of DBRs in one transaction"
         );
         require(
-            totalSupply.add(numberOfTokens) <= maxDBRs,
+            DBRSTotalSupply.add(numberOfTokens) <= maxDBRs,
             "Purchase would exceed max supply of DBRs"
         );
         require(
@@ -91,9 +92,23 @@ contract DBRTT is ERC721, Ownable {
         uint256 i;
         uint256 mintIndex;
         for (i; i < numberOfTokens; i++) {
-            mintIndex = totalSupply;
+            mintIndex = DBRSTotalSupply;
             _safeMint(_msgSender(), mintIndex);
         }
+    }
+
+    function walletOfOwner(address _owner)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        uint256 tokenCount = balanceOf(_owner);
+
+        uint256[] memory tokensId = new uint256[](tokenCount);
+        for (uint256 i; i < tokenCount; i++) {
+            tokensId[i] = tokenOfOwnerByIndex(_owner, i);
+        }
+        return tokensId;
     }
 
     function setTokenURI(uint256 tokenId, string memory _tokenURI)
@@ -122,7 +137,7 @@ contract DBRTT is ERC721, Ownable {
 
     function setMaxTokenAmount(uint256 _value) external onlyAdmin {
         require(
-            _value > totalSupply && _value <= 10_000,
+            _value > DBRSTotalSupply && _value <= 10_000,
             "Wrong value for max supply"
         );
 
