@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Select } from "antd";
-import { getAccounts } from "../../services/web3";
-import config from "../../config/index";
-import { ETHWalletBalance } from "../../components/ETHWallet";
+import { getAccounts } from "@/services/web3";
+import config from "@/config/index";
+import { ETHWalletBalance } from "components/ETHWallet";
 import {
   ERC721Wallet,
   ERC721WalletName,
   ERC721WalletSymbol,
   ERC721WalletBalance,
-} from "src/components/ERC721Wallet";
-// import "./homeIndex.less";
+} from "components/ERC721Wallet";
+import style from "./homeIndex.less";
 // import { Pie } from 'ant-design-pro/lib/Charts';
 const { Footer, Header } = Layout;
 const { Option } = Select;
@@ -54,7 +54,7 @@ function HomeIndex() {
   }, [accounts]);
   return (
     <Layout>
-      <div className="index">2222</div>
+      <div className={style.index}>2222</div>
       <Header className="header" style={{ color: "white" }}></Header>
       <button>连接钱包</button>
       {accounts ? (
