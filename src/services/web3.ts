@@ -23,13 +23,13 @@ const web3 = new Web3(window.web3.currentProvider);
 
 const NFTFY_CONTRACT_RINKEBY = "0xc0D1946C1754d2F94dE4Cf52deF7162f6611316D";
 
-const DBRTT = require("../contracts/DBRTT.json");
-const WRAPPER_ABI = require("../contracts/Wrapper.json");
-const SHARES_ABI = require("../contracts/Shares.json");
-const ERC20_METADATA_ABI = require("../contracts/ERC20Metadata.json");
-const ERC20_ABI = require("../contracts/ERC20.json");
+const DBRS = require("../abi/DBRS.json");
+const WRAPPER_ABI = require("../abi/Wrapper.json");
+const SHARES_ABI = require("../abi/Shares.json");
+const ERC20_METADATA_ABI = require("../abi/ERC20Metadata.json");
+const ERC20_ABI = require("../abi/ERC20.json");
 
-const ERC165_ABI = require("../contracts/ERC165.json");
+const ERC165_ABI = require("../abi/ERC165.json");
 
 // const ERC721_METADATA_INTERFACE_ID = '0x5b5e139f';
 const ERC721_INTERFACE_ID = "0x80ac58cd";
@@ -58,11 +58,6 @@ function fromCents(amount: string, decimals: number): string {
 
 export function isValidAddress(address: string): boolean {
   return web3.utils.isAddress(address);
-}
-
-export async function resolveName(name: string): Promise<string> {
-  if (/^0x[0-9A-Fa-f]{40}$/.test(name)) return name;
-  return web3.eth.ens.getAddress(name);
 }
 
 export async function getAccounts(): Promise<string[]> {
@@ -188,7 +183,7 @@ async function ERC721_balanceOf(
   contract: string,
   address: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBRTT, contract);
+  const abi = new window.web3.eth.Contract(DBRS, contract);
   console.log(abi, contract);
   return abi.methods.balanceOf(address).call();
 }
@@ -198,7 +193,7 @@ async function ERC721_tokenOfOwnerByIndex(
   address: string,
   index: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBRTT, contract);
+  const abi = new window.web3.eth.Contract(DBRS, contract);
   console.log(abi);
   return abi.methods.getMyAssets(address, index).call();
 }
@@ -277,7 +272,7 @@ async function Nftfy_getWrapper(
   contract: string,
   address: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBRTT, contract);
+  const abi = new window.web3.eth.Contract(DBRS, contract);
   return abi.methods.getWrapper(address).call();
 }
 

@@ -1,3 +1,3 @@
 export default {
-  nftAddress: "0x9B522B2D2e549359A75651ca2319A794832de107",
+  nftAddress: "0x0a78f2e0471Ab816383a25feBa5C35BE2C58122F",
 };

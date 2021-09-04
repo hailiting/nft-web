@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Select } from "antd";
-import { getAccounts } from "../services/web3";
-import config from "../config/index";
-import { ETHWalletBalance } from "./ETHWallet";
+import { getAccounts } from "../../services/web3";
+import config from "../../config/index";
+import { ETHWalletBalance } from "../../components/ETHWallet";
 import {
   ERC721Wallet,
   ERC721WalletName,
   ERC721WalletSymbol,
   ERC721WalletBalance,
-} from "./ERC721Wallet";
+} from "src/components/ERC721Wallet";
+// import "./homeIndex.less";
 // import { Pie } from 'ant-design-pro/lib/Charts';
 const { Footer, Header } = Layout;
 const { Option } = Select;
 const { nftAddress } = config;
-function App() {
+
+function HomeIndex() {
   const [mintValue, setMintValue] = useState("0");
   const [accounts, setAccounts] = useState<string[] | null>(null);
   const [account, setAccount] = useState("");
+  const [isNft, setIsNft] = useState(false);
   const [ERC721Balance, setERC721Balance] = useState<{
     ERC721Balance: string;
     ERC721Tokens: {
@@ -32,6 +35,11 @@ function App() {
   useEffect(() => {
     (async () => {
       setAccounts(await getAccounts());
+      setIsNft(
+        await ERC721Wallet({
+          address: nftAddress,
+        })
+      );
     })();
   }, []);
   useEffect(() => {
@@ -46,6 +54,7 @@ function App() {
   }, [accounts]);
   return (
     <Layout>
+      <div className="index">2222</div>
       <Header className="header" style={{ color: "white" }}></Header>
       <button>连接钱包</button>
       {accounts ? (
@@ -68,9 +77,7 @@ function App() {
       )}
       <h2>ETH钱包余额: </h2>
       <ETHWalletBalance account={account} />
-      {ERC721Wallet({
-        address: nftAddress,
-      }) ? (
+      {isNft ? (
         <div className="ERC721">
           <h3>
             <p>
@@ -80,6 +87,8 @@ function App() {
               NFT 合约符号 <ERC721WalletSymbol address={nftAddress} />
             </p>
           </h3>
+          <h3>当前NFT总数 </h3>
+          <h3>当前NFT是否开启 </h3>
           <h2>
             当前持有
             <p>balance {ERC721Balance?.ERC721Balance}</p>
@@ -106,4 +115,4 @@ function App() {
 function submit(mintValue: string) {
   console.log(mintValue);
 }
-export default App;
+export default HomeIndex;
