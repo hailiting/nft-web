@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from "react";
-import styles from "./btnWidget.less";
+import "./btnWidget.less";
 interface IBtnWidgetProps {
   label: string;
   onClick: MouseEventHandler<HTMLDivElement>;
@@ -7,7 +7,7 @@ interface IBtnWidgetProps {
 function BtnWidget(props: IBtnWidgetProps) {
   const { label, onClick } = props;
   return (
-    <div className={styles.labelWidget} onClick={onClick}>
+    <div className="btnWidget" onClick={onClick}>
       {label}
     </div>
   );

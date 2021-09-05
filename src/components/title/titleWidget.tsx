@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./titleWidget.less";
+import "./titleWidget.less";
 interface ITitleWidgetProps {
   label: string;
   subLable?: string;
@@ -7,7 +7,7 @@ interface ITitleWidgetProps {
 function TitleWidget(props: ITitleWidgetProps) {
   const { label, subLable } = props;
   return (
-    <div className={styles.titleWidget}>
+    <div className="titleWidget">
       <h3>
         {label} {subLable ? <i>{subLable}</i> : null}
       </h3>

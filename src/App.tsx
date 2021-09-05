@@ -15,7 +15,7 @@ function App() {
         ></Route>
       ))}
       {/* 默认路由 */}
-      <Redirect path="/" to="/home" />
+      <Redirect path="/" to="/" />
     </Switch>
   );
 }

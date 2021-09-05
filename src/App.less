@@ -1,3 +1,4 @@
+@import url("@/styles/theme.less");
 @font-face {
   font-family: Lobster;
   src: url("./assets/fonts/Lobster-Regular.ttf");
@@ -28,19 +29,19 @@ p {
   margin: 0;
   padding: 0;
 }
-body {
-  background-color: #151515;
-  color: #ffffff;
-  font-size: 20px !important;
-  padding: 0 10%;
-}
 
 body,
 html {
+  background-color: @bgColor01;
+  color: #ffffff;
   padding: 0;
   margin: 0;
-  font-family: Space Mono, sans-serif;
+  font-family: Gabriela, "sans-serif";
   font-weight: 400;
+}
+body {
+  padding: 0 14%;
+  font-size: 20px !important;
 }
 a {
   color: inherit;
@@ -52,4 +53,13 @@ li {
 }
 i {
   font-style: normal;
+}
+
+.h30 {
+  height: 30px;
+  width: 100%;
+}
+.h100 {
+  height: 100px;
+  width: 100%;
 }

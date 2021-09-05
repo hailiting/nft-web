@@ -9,7 +9,7 @@ export type RouterType = {
 };
 
 const HomeRouter: RouterType = {
-  path: "/home",
+  path: "/",
   component: HomeIndex,
   root: [],
 };

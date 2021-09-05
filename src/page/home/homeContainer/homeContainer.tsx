@@ -1,11 +1,12 @@
 import React from "react";
-import styles from "./homeContainer.less";
+import BtnWidget from "@/components/form/btnWidget";
+import "./homeContainer.less";
 function HomeContainer() {
   return (
-    <div className={styles.homeContainer}>
+    <div className="homeContainer">
       <h2>DontBuyRocks on the Fantom</h2>
-      <div className={styles.partone}>
-        <div className={styles.fl}>
+      <div className="partone">
+        <div className="fl">
           <p>
             Launched in 2021, Don’t Buy Rock is one of the last crypto
             collectible NFT-type projects on the Fantom blockchain, having
@@ -33,7 +34,7 @@ function HomeContainer() {
             exchange like Coinbase.
           </p>
         </div>
-        <div className={styles.fr}>
+        <div className="fr">
           <ul>
             {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((v) => (
               <li>
@@ -46,8 +47,8 @@ function HomeContainer() {
           </ul>
         </div>
       </div>
-      <div className={styles.mint}>
-        <div className={styles.fl}>
+      <div className="parttwo">
+        <div className="fl">
           <p>
             <strong>FAIR DISTRIBUTION</strong>
           </p>
@@ -56,14 +57,14 @@ function HomeContainer() {
             membership costs the same for everyone.
           </p>
         </div>
-        <div className={styles.fr}>
-          <div className={styles.mintNum}>
-            <div className={styles.sub}></div>
+        <div className="fr">
+          <div className="mintNum">
+            <div className="sub"></div>
             <h3>mintNum</h3>
-            <div className={styles.add}></div>
+            <div className="add"></div>
           </div>
-          <div className={styles.btn}>mint</div>
-          <div className={styles.remaining}>
+          <BtnWidget label="mint" onClick={() => {}} />
+          <div className="remaining">
             <p>
               remaining<i>10000/10000</i>
             </p>

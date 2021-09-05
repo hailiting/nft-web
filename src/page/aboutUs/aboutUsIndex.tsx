@@ -2,11 +2,11 @@ import React from "react";
 import HeaderWidget from "@/components/header/headerWidget";
 import FooterWidget from "@/components/footer/footerWidget";
 import TitleWidget from "@/components/title/titleWidget";
-import styles from "./aboutUsIndex.less";
+import "./aboutUsIndex.less";
 
 function AboutUsIndex() {
   return (
-    <div className={styles.aboutUsIndex}>
+    <div className="aboutUsIndex">
       <HeaderWidget />
       <TitleWidget label="基本说明" />
       <p>DontBuyRocks 是一个发布在 Fantom 网络上的 NFT 项目</p>
@@ -20,6 +20,7 @@ function AboutUsIndex() {
         Meaningless rocks, it can't even be used to smash the glass of a
         neighbor's house.
       </p>
+      <div className="h100"></div>
       <TitleWidget label="Mint说明" />
       <p>
         DBR 单价为 100 FTM，单个用户最多可以 Mint 20 个，超过 20
@@ -33,6 +34,7 @@ function AboutUsIndex() {
         每 Mint 一个，Remaining
         就会减少一个，当减少至0时，按钮不可点击，文字显示 Sold out
       </p>
+      <div className="h100"></div>
       <FooterWidget />
     </div>
   );

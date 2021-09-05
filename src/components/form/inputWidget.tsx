@@ -1,5 +1,5 @@
 import React, { AllHTMLAttributes } from "react";
-import styles from "./inputWidget.less";
+import "./inputWidget.less";
 interface IInputWidgetProps extends AllHTMLAttributes<HTMLElement> {
   value: string | ReadonlyArray<string> | number | undefined;
   placeholder: string;
@@ -10,7 +10,7 @@ interface IInputWidgetProps extends AllHTMLAttributes<HTMLElement> {
 function InputWidget(props: IInputWidgetProps) {
   const { value, disabled, readOnly, placeholder, type, alt } = props;
   return (
-    <div className={styles.labelWidget}>
+    <div className="inputWidget">
       <input
         alt={alt}
         value={value}
