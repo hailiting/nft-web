@@ -1,10 +1,104 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BtnWidget from "@/components/form/btnWidget";
+import {
+  getAccounts,
+  getERC721Name,
+  getERC721Symbol,
+  getERC721Balance,
+  getERC721TokenIdByIndex,
+  getERC721TokenURI,
+  getMaxDBRPurchase,
+  getERC721DBRTotalSupply,
+  getERC721SaleIsActive,
+  getMaxDBRs,
+  getETHBalance,
+  getERC721Price,
+  postERC721Mint,
+} from "@/services/web3";
+import config from "@/config/index";
+import Toast from "@/components/toast";
+
 import "./homeContainer.less";
+const { nftAddress: contract } = config;
 function HomeContainer() {
+  const [mintValue, setMintValue] = useState(1);
+  const [accounts, setAccounts] = useState<string[] | null>(null);
+  const [account, setAccount] = useState("");
+  const [ETHBalance, setETHBalance] = useState("");
+  const [maxDBRPurchase, setMaxDBRPurchase] = useState(20);
+  const [maxDBRs, setMaxDBRs] = useState(10000);
+  const [ERC721DBRTotalSupply, setERC721DBRTotalSupply] = useState(10000);
+  const [ERC721SaleIsActive, setERC721SaleIsActive] = useState(false);
+
+  const [ERC721Name, setERC721Name] = useState("");
+  const [ERC721Symbol, setERC721Symbol] = useState("");
+  const [ERC721Price, setERC721Price] = useState("50000000000000000");
+
+  const [ERC721Balance, setERC721Balance] = useState<String>("");
+  // const [ERC721Tokens, setERC721Tokens] = useState<{
+  //   [token: string]: {
+  //     tokenURI: string;
+  //     shares?: string | undefined;
+  //     balance?: string | undefined;
+  //     price?: string | undefined;
+  //   };
+  // }>({});
+
+  useEffect(() => {
+    (async () => {
+      setAccounts(await getAccounts());
+      setMaxDBRPurchase(Number(await getMaxDBRPurchase(contract)));
+      setMaxDBRs(Number(await getMaxDBRs(contract)));
+      setERC721DBRTotalSupply(Number(await getERC721DBRTotalSupply(contract)));
+      setERC721SaleIsActive(await getERC721SaleIsActive(contract));
+
+      setERC721Name(await getERC721Name(contract));
+      setERC721Symbol(await getERC721Symbol(contract));
+      setERC721Price(await getERC721Price(contract));
+    })();
+  }, []);
+  useEffect(() => {
+    if (accounts === null) return;
+    if (accounts.length === 0) return;
+    console.log(accounts);
+    setAccount(accounts[0]);
+    (async () => {
+      setETHBalance(await getETHBalance(accounts[0]));
+      // const balance = await getERC721Balance({ contract, account });
+
+      // setERC721Balance(balance);
+      // if (Number(balance) > 0) {
+      //   const _ERC721Tokens: {
+      //     [token: string]: {
+      //       tokenURI: string;
+      //       shares?: string;
+      //       balance?: string;
+      //       price?: string;
+      //     };
+      //   } = {};
+      //   console.log("22222aaa", account, contract);
+      //   if (ERC721Balance && Number(ERC721Balance) > 0) {
+      //     console.log("eeee", account, contract);
+      //     for (let i = 0; i < Number(ERC721Balance); i++) {
+      //       console.log("22222", account, contract, i);
+      //       const tokenId = await getERC721TokenIdByIndex({
+      //         account,
+      //         contract,
+      //         index: i,
+      //       });
+      //       const tokenURI = await getERC721TokenURI(account, tokenId);
+      //       _ERC721Tokens[tokenId] = {
+      //         tokenURI,
+      //       };
+      //     }
+      //     setERC721Tokens(_ERC721Tokens);
+      //   }
+      // }
+    })();
+  }, [accounts]);
   return (
     <div className="homeContainer">
-      <h2>DontBuyRocks on the Fantom</h2>
+      <h2>{ERC721Name} on the Fantom</h2>
       <div className="partone">
         <div className="fl">
           <p>
@@ -40,7 +134,7 @@ function HomeContainer() {
               <li key={v}>
                 <img
                   src={require(`../assets/${v}.${v === 4 ? "gif" : "png"}`)}
-                  alt="NFT-DBR"
+                  alt={`NFT-${ERC721Symbol}`}
                 />
               </li>
             ))}
@@ -53,20 +147,76 @@ function HomeContainer() {
             <strong>FAIR DISTRIBUTION</strong>
           </p>
           <p>
-            Buying a DBR costs 100 FTM. There are no price tiers; Dontbuyrocks
+            Buying a {ERC721Symbol} costs 100 FTM. There are no price tiers;{" "}
+            {ERC721Name}
             membership costs the same for everyone.
           </p>
         </div>
         <div className="fr">
           <div className="mintNum">
-            <div className="sub"></div>
-            <h3>mintNum</h3>
-            <div className="add"></div>
+            <div
+              className="sub"
+              onClick={() => {
+                console.log(2222);
+                if (mintValue > 0) {
+                  setMintValue(Math.floor(mintValue - 1));
+                }
+              }}
+            ></div>
+            <h3>{mintValue}</h3>
+            <div
+              className="add"
+              onClick={() => {
+                if (account) {
+                  if (
+                    (ERC721Balance &&
+                      Number(ERC721Balance) >= maxDBRPurchase) ||
+                    maxDBRPurchase < mintValue
+                  ) {
+                    Toast.show(
+                      `每个账户最多购买${maxDBRPurchase} ${ERC721Symbol}`
+                    );
+                    return false;
+                  }
+                  if (
+                    Number(ETHBalance) * Math.pow(10, 18) <
+                    Number(ERC721Price) * mintValue
+                  ) {
+                    Toast.show(
+                      `余额不足, 当前余额${ETHBalance}， NFT价格：${
+                        Number(ERC721Price) / Math.pow(10, 18)
+                      }`
+                    );
+                  } else {
+                    setMintValue(Math.floor(mintValue + 1));
+                  }
+                } else {
+                  Toast.show("链接钱包失败");
+                }
+              }}
+            ></div>
           </div>
-          <BtnWidget label="mint" onClick={() => {}} />
+          <BtnWidget
+            label="mint"
+            onClick={() => {
+              if (!ERC721SaleIsActive) {
+                Toast.show("合约还未开启，敬请期待！");
+                return false;
+              }
+              postERC721Mint({
+                numberOfTokens: `${mintValue}`,
+                price: `${ERC721Price}`,
+                contract: contract,
+                account: account,
+              });
+            }}
+          />
           <div className="remaining">
             <p>
-              remaining<i>10000/10000</i>
+              remaining
+              <i>
+                {maxDBRs - ERC721DBRTotalSupply}/{maxDBRs}
+              </i>
             </p>
           </div>
         </div>

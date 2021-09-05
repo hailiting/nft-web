@@ -1,6 +1,15 @@
+import { StringLiteral } from "@babel/types";
 import Portis from "@portis/web3";
 import Web3 from "web3";
+const WRAPPER_ABI = require("../abi/Wrapper.json");
+const SHARES_ABI = require("../abi/Shares.json");
+const ERC20_METADATA_ABI = require("../abi/ERC20Metadata.json");
+const ERC20_ABI = require("../abi/ERC20.json");
+const ERC721_ENUMERABLE_ABI = require("../abi/ERC721Enumerable.json");
+const ERC165_ABI = require("../abi/ERC165.json");
 
+const ERC721_ABI = require("../abi/ERC721.json");
+const DBR = require("../abi/DBR.json");
 declare global {
   interface Window {
     ethereum: any;
@@ -22,14 +31,6 @@ if (!window.web3) {
 const web3 = new Web3(window.web3.currentProvider);
 
 const NFTFY_CONTRACT_RINKEBY = "0xc0D1946C1754d2F94dE4Cf52deF7162f6611316D";
-
-const DBRS = require("../abi/DBRS.json");
-const WRAPPER_ABI = require("../abi/Wrapper.json");
-const SHARES_ABI = require("../abi/Shares.json");
-const ERC20_METADATA_ABI = require("../abi/ERC20Metadata.json");
-const ERC20_ABI = require("../abi/ERC20.json");
-
-const ERC165_ABI = require("../abi/ERC165.json");
 
 // const ERC721_METADATA_INTERFACE_ID = '0x5b5e139f';
 const ERC721_INTERFACE_ID = "0x80ac58cd";
@@ -142,10 +143,13 @@ export async function getERC20Symbol(contract: string): Promise<string> {
   return ERC20_symbol(contract);
 }
 
-export async function getERC20Balance(
-  account: string,
-  contract: string
-): Promise<string> {
+export async function getERC20Balance({
+  contract,
+  account,
+}: {
+  contract: string;
+  account: string;
+}): Promise<string> {
   const decimals = await ERC20_decimals(contract);
   const balance = await ERC20_balanceOf(contract, account);
   return fromCents(balance, decimals);
@@ -162,12 +166,12 @@ export async function transferERC20(
 }
 
 async function ERC721_name(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
+  const abi = new window.web3.eth.Contract(DBR, contract);
   return abi.methods.name().call();
 }
 
 async function ERC721_symbol(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
+  const abi = new window.web3.eth.Contract(DBR, contract);
   return abi.methods.symbol().call();
 }
 
@@ -175,27 +179,56 @@ async function ERC721_tokenURI(
   contract: string,
   tokenId: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
-  return abi.methods.tokenURI(tokenId).call();
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return abi.methods.baseTokenURI(tokenId).call();
+}
+async function ERC721_price(contract: string): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return abi.methods.DBRPrice().call();
+}
+async function ERC721_maxDBRPurchase(contract: string): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return abi.methods.maxDBRPurchase().call();
+}
+async function ERC721_maxDBRs(contract: string): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return abi.methods.maxDBRs().call();
+}
+async function ERC721_DBRTotalSupply(contract: string): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return abi.methods.DBRTotalSupply().call();
+}
+async function ERC721_saleIsActive(contract: string): Promise<boolean> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return abi.methods.saleIsActive().call();
 }
 
-async function ERC721_balanceOf(
-  contract: string,
-  address: string
-): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBRS, contract);
-  console.log(abi, contract);
-  return abi.methods.balanceOf(address).call();
+async function ERC721_balanceOf({
+  contract,
+  account,
+}: {
+  contract: string;
+  account: string;
+}): Promise<string> {
+  const abi = new window.web3.eth.Contract(ERC721_ABI, contract);
+  console.log("abi: ", abi);
+  const balance = await abi.methods.balanceOf(account).call();
+  console.log("balance: ", balance);
+  return balance;
 }
 
-async function ERC721_tokenOfOwnerByIndex(
-  contract: string,
-  address: string,
-  index: string
-): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBRS, contract);
-  console.log(abi);
-  return abi.methods.getMyAssets(address, index).call();
+async function ERC721_tokenOfOwnerByIndex({
+  contract,
+  account,
+  index,
+}: {
+  contract: string;
+  account: string;
+  index: string;
+}): Promise<string> {
+  console.log("11111", account, contract, index);
+  const abi = new window.web3.eth.Contract(ERC721_ENUMERABLE_ABI, contract);
+  return abi.methods.tokenOfOwnerByIndex(account, 0).call();
 }
 
 async function ERC721_safeTransferFrom(
@@ -215,8 +248,50 @@ async function ERC721_safeTransferFrom(
   });
 }
 
+async function ERC721_mint({
+  numberOfTokens,
+  contract,
+  price,
+  account,
+}: {
+  numberOfTokens: string;
+  contract: string;
+  account: string;
+  price: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .mintDBRs(numberOfTokens)
+      .send({ from: account, value: price })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+
+async function ERC721_flipSaleState({
+  contract,
+  account,
+}: {
+  contract: string;
+  account: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, contract);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .flipSaleState()
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+
 export async function getERC721Name(contract: string): Promise<string> {
   return ERC721_name(contract);
+}
+
+export async function getERC721Price(contract: string): Promise<string> {
+  return ERC721_price(contract);
 }
 
 export async function getERC721Symbol(contract: string): Promise<string> {
@@ -229,21 +304,52 @@ export async function getERC721TokenURI(
 ): Promise<string> {
   return ERC721_tokenURI(contract, tokenId);
 }
-
-export async function getERC721Balance(
-  account: string,
-  contract: string
-): Promise<string> {
-  const balance = await ERC721_balanceOf(contract, account);
-  return fromCents(balance, 0);
+export async function getMaxDBRPurchase(contract: string): Promise<string> {
+  return ERC721_maxDBRPurchase(contract);
 }
 
-export async function getERC721TokenIdByIndex(
-  account: string,
-  contract: string,
-  index: number
+export async function getMaxDBRs(contract: string): Promise<string> {
+  return ERC721_maxDBRs(contract);
+}
+export async function getERC721DBRTotalSupply(
+  contract: string
 ): Promise<string> {
-  return ERC721_tokenOfOwnerByIndex(contract, account, String(index));
+  return ERC721_DBRTotalSupply(contract);
+}
+export async function getERC721SaleIsActive(
+  contract: string
+): Promise<boolean> {
+  return ERC721_saleIsActive(contract);
+}
+
+export async function getERC721Balance({
+  contract,
+  account,
+}: {
+  contract: string;
+  account: string;
+}): Promise<string> {
+  const balance = await ERC721_balanceOf({
+    contract,
+    account,
+  });
+  return balance;
+}
+
+export async function getERC721TokenIdByIndex({
+  account,
+  contract,
+  index,
+}: {
+  account: string;
+  contract: string;
+  index: number;
+}): Promise<string> {
+  return ERC721_tokenOfOwnerByIndex({
+    contract,
+    account,
+    index: String(index),
+  });
 }
 
 export async function transferERC721(
@@ -254,6 +360,29 @@ export async function transferERC721(
   data = "0x"
 ): Promise<void> {
   return ERC721_safeTransferFrom(account, contract, address, tokenId, data);
+}
+export async function postERC721Mint({
+  numberOfTokens,
+  contract,
+  price,
+  account,
+}: {
+  numberOfTokens: string;
+  contract: string;
+  account: string;
+  price: string;
+}): Promise<void> {
+  return ERC721_mint({ numberOfTokens, contract, account, price });
+}
+
+export async function postERC721FlipSaleState({
+  contract,
+  account,
+}: {
+  contract: string;
+  account: string;
+}): Promise<void> {
+  return ERC721_flipSaleState({ contract, account });
 }
 
 export async function supportsERC721(contract: string): Promise<boolean> {
@@ -272,7 +401,7 @@ async function Nftfy_getWrapper(
   contract: string,
   address: string
 ): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBRS, contract);
+  const abi = new window.web3.eth.Contract(DBR, contract);
   return abi.methods.getWrapper(address).call();
 }
 

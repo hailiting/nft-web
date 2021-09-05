@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import HeaderWidget from "@/components/header/headerWidget";
 import FooterWidget from "@/components/footer/footerWidget";
@@ -9,9 +9,26 @@ import LabelWidget from "@/components/form/labelWidget";
 import InputWidget from "@/components/form/inputWidget";
 import BtnWidget from "@/components/form/btnWidget";
 
+import { postERC721FlipSaleState, getAccounts } from "@/services/web3";
+
+import config from "@/config/index";
 import "./adminIndex.less";
 
+const { nftAddress: contract } = config;
 function AdminIndex() {
+  const [accounts, setAccounts] = useState<string[] | null>(null);
+  const [account, setAccount] = useState("");
+  useEffect(() => {
+    (async () => {
+      setAccounts(await getAccounts());
+    })();
+  }, []);
+  useEffect(() => {
+    if (accounts === null) return;
+    if (accounts.length === 0) return;
+    console.log(accounts);
+    setAccount(accounts[0]);
+  }, [accounts]);
   return (
     <div className="adminIndex">
       <HeaderWidget />
@@ -69,7 +86,15 @@ function AdminIndex() {
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="flipSaleState" subLable="NFT 开关" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={() => {
+                postERC721FlipSaleState({
+                  contract: contract,
+                  account: account,
+                });
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="freeze" subLable="冻结当前选定tokenId" />
@@ -364,7 +389,7 @@ function AdminIndex() {
             <BtnWidget label="transact" onClick={() => {}} />
           </FormWrapWidget>
           <FormWrapWidget>
-            <TitleWidget label="DBRSTotalSupply" />
+            <TitleWidget label="DBRTotalSupply" />
             <BtnWidget label="transact" onClick={() => {}} />
           </FormWrapWidget>
 

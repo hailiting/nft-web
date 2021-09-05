@@ -1,5 +1,6 @@
 /// <reference types="node" />
 /// <reference types="react" />
+/// <reference types="@types/webpack-env" />
 /// <reference types="react-dom" />
 
 declare namespace NodeJS {
