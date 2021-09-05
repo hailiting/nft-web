@@ -1,6 +1,6 @@
 import React from "react";
 import { HomeIndex, AdminIndex, AboutUsIndex } from "../page";
-
+const preLink = "/nft-web";
 export type RouterType = {
   path: string;
   component: React.LazyExoticComponent<any>;
@@ -9,18 +9,18 @@ export type RouterType = {
 };
 
 const HomeRouter: RouterType = {
-  path: "/",
+  path: `${preLink}/`,
   component: HomeIndex,
   root: [],
 };
 
 const AdminRouter: RouterType = {
-  path: "/admin",
+  path: `${preLink}/admin`,
   component: AdminIndex,
   root: [],
 };
 const AboutUsRouter: RouterType = {
-  path: "/about",
+  path: `${preLink}/about`,
   component: AboutUsIndex,
   root: [],
 };
