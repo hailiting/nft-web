@@ -1,22 +1,24 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
+import config from "@/config";
+const preLink = config.preLink;
+
 ReactDOM.render(
-  <BrowserRouter>
-    {/* 使用路由懒加载，使用用Suspense抱起来 */}
+  <HashRouter basename={`${preLink}/`}>
     <Suspense fallback={<div></div>}>
       <Switch>
         <Route
-          path="/"
+          path={`/`}
           render={(routerProps) => {
             return <App {...routerProps} />;
           }}
         />
       </Switch>
     </Suspense>
-  </BrowserRouter>,
+  </HashRouter>,
   document.getElementById("root")
 );
 

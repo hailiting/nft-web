@@ -1,8 +1,5 @@
 import React from "react";
 import { HomeIndex, AdminIndex, AboutUsIndex } from "../page";
-import config from "@/config";
-const preLink = config.preLink;
-
 export type RouterType = {
   path: string;
   component: React.LazyExoticComponent<any>;
@@ -11,18 +8,18 @@ export type RouterType = {
 };
 
 const HomeRouter: RouterType = {
-  path: `${preLink}/`,
+  path: "/",
   component: HomeIndex,
   root: [],
 };
 
 const AdminRouter: RouterType = {
-  path: `${preLink}/admin`,
+  path: "/admin",
   component: AdminIndex,
   root: [],
 };
 const AboutUsRouter: RouterType = {
-  path: `${preLink}/about`,
+  path: "/about",
   component: AboutUsIndex,
   root: [],
 };
