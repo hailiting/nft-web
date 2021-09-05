@@ -5,7 +5,12 @@ function HeaderWidget() {
   return (
     <div className="header">
       <div className="headerWidget">
-        <h1>DontBuyRocks</h1>
+        <h1>
+          <a href="/" title="DontBuyRocks">
+            {" "}
+            DontBuyRocks
+          </a>
+        </h1>
         <div className="fr">
           <h2>
             <a
