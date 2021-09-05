@@ -4,9 +4,9 @@ import {
   getAccounts,
   getERC721Name,
   getERC721Symbol,
-  getERC721Balance,
-  getERC721TokenIdByIndex,
-  getERC721TokenURI,
+  // getERC721Balance,
+  // getERC721TokenIdByIndex,
+  // getERC721TokenURI,
   getMaxDBRPurchase,
   getERC721DBRTotalSupply,
   getERC721SaleIsActive,
@@ -34,7 +34,7 @@ function HomeContainer() {
   const [ERC721Symbol, setERC721Symbol] = useState("");
   const [ERC721Price, setERC721Price] = useState("50000000000000000");
 
-  const [ERC721Balance, setERC721Balance] = useState<String>("");
+  // const [ERC721Balance, setERC721Balance] = useState<String>("");
   // const [ERC721Tokens, setERC721Tokens] = useState<{
   //   [token: string]: {
   //     tokenURI: string;
@@ -169,8 +169,8 @@ function HomeContainer() {
               onClick={() => {
                 if (account) {
                   if (
-                    (ERC721Balance &&
-                      Number(ERC721Balance) >= maxDBRPurchase) ||
+                    // (ERC721Balance &&
+                    //   Number(ERC721Balance) >= maxDBRPurchase) ||
                     maxDBRPurchase < mintValue
                   ) {
                     Toast.show(
