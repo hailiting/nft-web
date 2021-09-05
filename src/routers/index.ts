@@ -20,7 +20,7 @@ const AdminRouter: RouterType = {
   root: [],
 };
 const AboutUsRouter: RouterType = {
-  path: "/home",
+  path: "/about",
   component: AboutUsIndex,
   root: [],
 };
