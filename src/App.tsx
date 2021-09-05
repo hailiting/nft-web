@@ -1,6 +1,8 @@
 import React from "react";
 import { Redirect, Route, Switch, withRouter } from "react-router";
 import { Routers } from "./routers";
+import "lib-flexible";
+import "./App.less";
 function App() {
   return (
     <Switch>
@@ -13,7 +15,7 @@ function App() {
         ></Route>
       ))}
       {/* 默认路由 */}
-      <Redirect path="/" to="/home" />
+      <Redirect path="/" to="/" />
     </Switch>
   );
 }
