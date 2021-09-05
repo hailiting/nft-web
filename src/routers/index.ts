@@ -1,6 +1,8 @@
 import React from "react";
 import { HomeIndex, AdminIndex, AboutUsIndex } from "../page";
-const preLink = "/nft-web";
+import config from "@/config";
+const preLink = config.preLink;
+
 export type RouterType = {
   path: string;
   component: React.LazyExoticComponent<any>;
