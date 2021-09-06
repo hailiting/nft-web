@@ -1463,14 +1463,13 @@ pragma solidity ^0.8.0;
 
 contract DBR is ERC721Enumerable, Ownable {
     using SafeMath for uint256;
-    uint256 public DBRTotalSupply;
     uint256 public DBRPrice = 50000000000000000; // 0.05 ETH
     uint256 public maxDBRPurchase = 20;
     uint256 public maxDBRs = 10000;
-    uint256 public adminFeeRatio = 0;
-    uint256 public reserveAmount = 40;
-    string public baseTokenURI;
+    uint256 public _reserved = 20;
+    string public _baseTokenURI;
     address admin;
+    address[] public adminList;
     mapping(address => bool) public admins;
 
     bool public saleIsActive = false;
@@ -1479,9 +1478,6 @@ contract DBR is ERC721Enumerable, Ownable {
     mapping(uint256 => bool) frozenIds;
     // Optional mapping for token URIs
     mapping(uint256 => string) private _tokenURIs;
-    // Base URI
-    string private _baseTokenURI;
-
     event DBRPriceChanged(uint256 price);
     event MaxTokenAmountChanged(uint256 value);
     event MaxPurchaseChanged(uint256 value);
@@ -1501,26 +1497,34 @@ contract DBR is ERC721Enumerable, Ownable {
         _;
     }
 
-    constructor(address _admin) ERC721("Dont Buy Rocks", "DBR") {
-        admin = _admin;
-        admins[admin] = true;
-        admins[msg.sender] = true;
+    constructor(address[] memory _admin) ERC721("Dont Buy Rocks", "DBR") {
+        for (uint256 i = 0; i < _admin.length; i++) {
+            admins[_admin[i]] = true;
+        }
+        adminList = _admin;
     }
 
     function withdraw() public onlyAdmin {
         uint256 balance = address(this).balance;
-        uint256 adminFee = (balance * adminFeeRatio) / 100;
-        Address.sendValue(payable(admin), adminFee);
-        balance = balance - adminFee;
-        Address.sendValue(payable(_msgSender()), balance);
+        uint256 _each = balance / adminList.length;
+        for (uint256 i = 0; i < adminList.length; i++) {
+            require(payable(adminList[i]).send(_each));
+        }
     }
 
-    function reserveDBRs(address receipt) public onlyAdmin onReserve {
-        uint256 supply = DBRTotalSupply;
-        uint256 i;
-        for (i; i < reserveAmount; i++) {
-            _safeMint(receipt, supply + i);
+    function reserveDBRs(address _to, uint256 _amount)
+        external
+        onlyAdmin
+        onReserve
+    {
+        require(_amount <= _reserved, "Exceeds reserved Cat supply");
+
+        uint256 supply = totalSupply();
+        for (uint256 i; i < _amount; i++) {
+            _safeMint(_to, supply + i);
         }
+
+        _reserved -= _amount;
     }
 
     function flipSaleState() public onlyAdmin {
@@ -1528,27 +1532,26 @@ contract DBR is ERC721Enumerable, Ownable {
         emit RolledOver(saleIsActive);
     }
 
-    function mintDBRs(uint256 numberOfTokens) public payable {
+    function mintDBRs(uint256 num) public payable {
+        uint256 supply = totalSupply();
         require(saleIsActive, "Sale is not active");
-        require(numberOfTokens > 0, "Cannot buy 0");
+        require(num > 0, "Cannot buy 0");
         require(
-            numberOfTokens <= maxDBRPurchase,
+            num < maxDBRPurchase,
             "Exceeds max number of DBRs in one transaction"
         );
         require(
-            DBRTotalSupply.add(numberOfTokens) <= maxDBRs,
+            supply + num < maxDBRs - _reserved,
             "Purchase would exceed max supply of DBRs"
         );
         require(
-            DBRPrice.mul(numberOfTokens) == msg.value,
+            DBRPrice.mul(num) <= msg.value,
             "Ether value sent is not correct"
         );
-
-        uint256 i;
         uint256 mintIndex;
-        for (i; i < numberOfTokens; i++) {
-            mintIndex = DBRTotalSupply;
-            _safeMint(_msgSender(), mintIndex);
+        for (uint256 i; i < num; i++) {
+            mintIndex = supply + i;
+            _safeMint(msg.sender, supply + i);
         }
     }
 
@@ -1588,7 +1591,7 @@ contract DBR is ERC721Enumerable, Ownable {
         _baseTokenURI = baseTokenURI_;
     }
 
-    function getBaseTokenURI() internal view virtual returns (string memory) {
+    function _baseURI() internal view virtual override returns (string memory) {
         return _baseTokenURI;
     }
 
@@ -1601,7 +1604,7 @@ contract DBR is ERC721Enumerable, Ownable {
 
     function setMaxTokenAmount(uint256 _value) external onlyAdmin {
         require(
-            _value > DBRTotalSupply && _value <= 10_000,
+            _value > totalSupply() && _value <= 10_000,
             "Wrong value for max supply"
         );
 
@@ -1616,12 +1619,8 @@ contract DBR is ERC721Enumerable, Ownable {
         emit MaxPurchaseChanged(_value);
     }
 
-    function setAdminFeeRatio(uint256 _feeRatio) external onlyAdmin {
-        adminFeeRatio = _feeRatio;
-    }
-
-    function setReserveAmount(uint256 _reserveAmount) external onlyAdmin {
-        reserveAmount = _reserveAmount;
+    function setReserveAmount(uint256 __reserved) external onlyAdmin {
+        _reserved = __reserved;
     }
 
     function enableAdmin(address _addr) external onlyOwner {
