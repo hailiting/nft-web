@@ -1,7 +1,9 @@
 import Portis from "@portis/web3";
 import Web3 from "web3";
-const WRAPPER_ABI = require("../abi/Wrapper.json");
-const SHARES_ABI = require("../abi/Shares.json");
+
+import config from "@/config/index";
+const { nftAddress } = config;
+
 const ERC20_METADATA_ABI = require("../abi/ERC20Metadata.json");
 const ERC20_ABI = require("../abi/ERC20.json");
 const ERC721_ENUMERABLE_ABI = require("../abi/ERC721Enumerable.json");
@@ -164,52 +166,55 @@ export async function transferERC20(
   return ERC20_transfer(account, contract, address, toCents(amount, decimals));
 }
 
-async function ERC721_name(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC165_supportsInterface(
+  contract: string,
+  interfaceId: string
+): Promise<boolean> {
+  const abi = new window.web3.eth.Contract(ERC165_ABI, contract);
+  return abi.methods.supportsInterface(interfaceId).call();
+}
+
+async function ERC721_name(): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.name().call();
 }
 
-async function ERC721_symbol(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_symbol(): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.symbol().call();
 }
 
-async function ERC721_tokenURI(
-  contract: string,
-  tokenId: string
-): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_tokenURI(tokenId: string): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.baseTokenURI(tokenId).call();
 }
-async function ERC721_price(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_price(): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.DBRPrice().call();
 }
-async function ERC721_maxDBRPurchase(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_maxDBRPurchase(): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.maxDBRPurchase().call();
 }
-async function ERC721_maxDBRs(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_maxDBRs(): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.maxDBRs().call();
 }
-async function ERC721_DBRTotalSupply(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_DBRTotalSupply(): Promise<string> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.DBRTotalSupply().call();
 }
-async function ERC721_saleIsActive(contract: string): Promise<boolean> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+async function ERC721_saleIsActive(): Promise<boolean> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return abi.methods.saleIsActive().call();
 }
 
 async function ERC721_balanceOf({
-  contract,
   account,
 }: {
-  contract: string;
   account: string;
 }): Promise<string> {
-  const abi = new window.web3.eth.Contract(ERC721_ABI, contract);
+  const abi = new window.web3.eth.Contract(ERC721_ABI, nftAddress);
   console.log("abi: ", abi);
   const balance = await abi.methods.balanceOf(account).call();
   console.log("balance: ", balance);
@@ -217,48 +222,27 @@ async function ERC721_balanceOf({
 }
 
 async function ERC721_tokenOfOwnerByIndex({
-  contract,
   account,
   index,
 }: {
-  contract: string;
   account: string;
   index: string;
 }): Promise<string> {
-  console.log("11111", account, contract, index);
-  const abi = new window.web3.eth.Contract(ERC721_ENUMERABLE_ABI, contract);
+  console.log("11111", account, nftAddress, index);
+  const abi = new window.web3.eth.Contract(ERC721_ENUMERABLE_ABI, nftAddress);
   return abi.methods.tokenOfOwnerByIndex(account, 0).call();
-}
-
-async function ERC721_safeTransferFrom(
-  account: string,
-  contract: string,
-  address: string,
-  tokenId: string,
-  data: string
-): Promise<void> {
-  const abi = new window.web3.eth.Contract(ERC20_METADATA_ABI, contract);
-  return new Promise((resolve, reject) => {
-    abi.methods
-      .safeTransferFrom(account, address, tokenId, data)
-      .send({ from: account })
-      .once("confirmation", (confNumber: any, receipt: any) => resolve())
-      .once("error", reject);
-  });
 }
 
 async function ERC721_mint({
   numberOfTokens,
-  contract,
   price,
   account,
 }: {
   numberOfTokens: string;
-  contract: string;
   account: string;
   price: string;
 }): Promise<void> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return new Promise((resolve, reject) => {
     abi.methods
       .mintDBRs(numberOfTokens)
@@ -269,13 +253,11 @@ async function ERC721_mint({
 }
 
 async function ERC721_flipSaleState({
-  contract,
   account,
 }: {
-  contract: string;
   account: string;
 }): Promise<void> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
   return new Promise((resolve, reject) => {
     abi.methods
       .flipSaleState()
@@ -284,211 +266,476 @@ async function ERC721_flipSaleState({
       .once("error", reject);
   });
 }
-
-export async function getERC721Name(contract: string): Promise<string> {
-  return ERC721_name(contract);
-}
-
-export async function getERC721Price(contract: string): Promise<string> {
-  return ERC721_price(contract);
-}
-
-export async function getERC721Symbol(contract: string): Promise<string> {
-  return ERC721_symbol(contract);
-}
-
-export async function getERC721TokenURI(
-  contract: string,
-  tokenId: string
-): Promise<string> {
-  return ERC721_tokenURI(contract, tokenId);
-}
-export async function getMaxDBRPurchase(contract: string): Promise<string> {
-  return ERC721_maxDBRPurchase(contract);
-}
-
-export async function getMaxDBRs(contract: string): Promise<string> {
-  return ERC721_maxDBRs(contract);
-}
-export async function getERC721DBRTotalSupply(
-  contract: string
-): Promise<string> {
-  return ERC721_DBRTotalSupply(contract);
-}
-export async function getERC721SaleIsActive(
-  contract: string
-): Promise<boolean> {
-  return ERC721_saleIsActive(contract);
-}
-
-export async function getERC721Balance({
-  contract,
+async function ERC721_approve({
+  to,
+  tokenId,
   account,
 }: {
-  contract: string;
+  to: string;
+  tokenId: string;
   account: string;
-}): Promise<string> {
-  const balance = await ERC721_balanceOf({
-    contract,
-    account,
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .approve(to, tokenId)
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
   });
-  return balance;
 }
+async function ERC721_disableAmin({
+  _addr,
+  account,
+}: {
+  _addr: string;
+  account: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .disableAmin(_addr)
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+async function ERC721_enableAmin({
+  _addr,
+  account,
+}: {
+  _addr: string;
+  account: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .enableAmin(_addr)
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+async function ERC721_freeze({
+  tokenId,
+  account,
+}: {
+  tokenId: string;
+  account: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .freeze(tokenId)
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+async function ERC721_freezeAll({
+  account,
+}: {
+  account: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .freezeAll()
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+async function ERC721_renounceOwnership({
+  account,
+}: {
+  account: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .renounceOwnership()
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+async function ERC721_reserveDBRs({
+  account,
+  _to,
+  _amount,
+}: {
+  account: string;
+  _to: string;
+  _amount: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .reserveDBRs(_to, _amount)
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+async function ERC721_safeTransferFrom({
+  account,
+  _to,
+  _from,
+  _tokenId,
+}: {
+  account: string;
+  _to: string;
+  _from: string;
+  _tokenId: string;
+}): Promise<void> {
+  const abi = new window.web3.eth.Contract(DBR, nftAddress);
+  return new Promise((resolve, reject) => {
+    abi.methods
+      .safeTransferFrom(_to, _from, _tokenId)
+      .send({ from: account })
+      .once("confirmation", (confNumber: any, receipt: any) => resolve())
+      .once("error", reject);
+  });
+}
+// todo
+// async function ERC721_setApprovalForAll({
+//   account,
+//   _to,
+//   _from,
+//   _tokenId,
+// }: {
+//   account: string;
+//   _to: string;
+//   _from: string;
+//   _tokenId: string;
+// }): Promise<void> {
+//   const abi = new window.web3.eth.Contract(DBR, nftAddress);
+//   return new Promise((resolve, reject) => {
+//     abi.methods
+//       .setApprovalForAll(_to, _from, _tokenId)
+//       .send({ from: account })
+//       .once("confirmation", (confNumber: any, receipt: any) => resolve())
+//       .once("error", reject);
+//   });
+// }
 
 export async function getERC721TokenIdByIndex({
   account,
-  contract,
   index,
 }: {
   account: string;
-  contract: string;
   index: number;
 }): Promise<string> {
   return ERC721_tokenOfOwnerByIndex({
-    contract,
     account,
     index: String(index),
   });
-}
-
-export async function transferERC721(
-  account: string,
-  contract: string,
-  address: string,
-  tokenId: string,
-  data = "0x"
-): Promise<void> {
-  return ERC721_safeTransferFrom(account, contract, address, tokenId, data);
-}
-export async function postERC721Mint({
-  numberOfTokens,
-  contract,
-  price,
-  account,
-}: {
-  numberOfTokens: string;
-  contract: string;
-  account: string;
-  price: string;
-}): Promise<void> {
-  return ERC721_mint({ numberOfTokens, contract, account, price });
-}
-
-export async function postERC721FlipSaleState({
-  contract,
-  account,
-}: {
-  contract: string;
-  account: string;
-}): Promise<void> {
-  return ERC721_flipSaleState({ contract, account });
 }
 
 export async function supportsERC721(contract: string): Promise<boolean> {
   return ERC165_supportsInterface(contract, ERC721_INTERFACE_ID);
 }
 
-async function ERC165_supportsInterface(
-  contract: string,
-  interfaceId: string
-): Promise<boolean> {
-  const abi = new window.web3.eth.Contract(ERC165_ABI, contract);
-  return abi.methods.supportsInterface(interfaceId).call();
+// post erc721
+export async function postERC721Approve({
+  to,
+  tokenId,
+  account,
+}: {
+  to: string;
+  tokenId: string;
+  account: string;
+}): Promise<void> {
+  return ERC721_approve({ to, tokenId, account });
+}
+export async function postERC721DisableAmin({
+  _addr,
+  account,
+}: {
+  _addr: string;
+  account: string;
+}): Promise<void> {
+  return ERC721_disableAmin({ _addr, account });
 }
 
-async function Nftfy_getWrapper(
-  contract: string,
-  address: string
-): Promise<string> {
-  const abi = new window.web3.eth.Contract(DBR, contract);
-  return abi.methods.getWrapper(address).call();
+export async function postERC721EnableAmin({
+  _addr,
+  account,
+}: {
+  _addr: string;
+  account: string;
+}): Promise<void> {
+  return ERC721_enableAmin({ _addr, account });
 }
 
-async function Wrapper_getShares(
-  contract: string,
-  tokenId: string
-): Promise<string> {
-  const abi = new window.web3.eth.Contract(WRAPPER_ABI, contract);
-  return abi.methods.getShares(tokenId).call();
+export async function postERC721FlipSaleState({
+  account,
+}: {
+  account: string;
+}): Promise<void> {
+  return ERC721_flipSaleState({ account });
 }
 
-async function Shares_isRedeemable(contract: string): Promise<boolean> {
-  const abi = new window.web3.eth.Contract(SHARES_ABI, contract);
-  return abi.methods.isRedeemable().call();
+export async function freeze({
+  tokenId,
+  account,
+}: {
+  tokenId: string;
+  account: string;
+}): Promise<void> {
+  return ERC721_freeze({ tokenId, account });
 }
 
-async function Shares_getSharePrice(contract: string): Promise<string> {
-  const abi = new window.web3.eth.Contract(SHARES_ABI, contract);
-  return abi.methods.getSharePrice().call();
+export async function freezeAll({
+  account,
+}: {
+  account: string;
+}): Promise<void> {
+  return ERC721_freezeAll({ account });
 }
 
-async function Shares_release(
-  account: string,
-  contract: string,
-  amount: string
-): Promise<void> {
-  const abi = new window.web3.eth.Contract(SHARES_ABI, contract);
-  return new Promise((resolve, reject) => {
-    abi.methods
-      .release()
-      .send({ from: account, value: amount })
-      .once("confirmation", (confNumber: any, receipt: any) => resolve())
-      .once("error", reject);
+export async function postERC721Mint({
+  numberOfTokens,
+  price,
+  account,
+}: {
+  numberOfTokens: string;
+  account: string;
+  price: string;
+}): Promise<void> {
+  return ERC721_mint({ numberOfTokens, account, price });
+}
+
+export async function postERC721RenounceOwnership({
+  account,
+}: {
+  account: string;
+}): Promise<void> {
+  return ERC721_renounceOwnership({ account });
+}
+
+export async function postERC721ReserveDBRs({
+  account,
+  _to,
+  _amount,
+}: {
+  account: string;
+  _to: string;
+  _amount: string;
+}): Promise<void> {
+  return ERC721_reserveDBRs({ _to, _amount, account });
+}
+export async function safeTransferFrom({
+  account,
+  _to,
+  _from,
+  _tokenId,
+}: {
+  account: string;
+  _to: string;
+  _from: string;
+  _tokenId: string;
+}): Promise<void> {
+  return ERC721_safeTransferFrom({ _to, _from, _tokenId, account });
+}
+
+// export async function setApprovalForAll({
+//   operator,
+//   approved,
+// }: {
+//   operator: string;
+//   approved: string;
+// }): Promise<void> {
+//   return ERC721_setApprovalForAll({ operator, approved });
+// }
+
+// export async function setBaseTokenURI({
+//   baseTokenURI_,
+// }: {
+//   baseTokenURI_: string;
+// }): Promise<void> {
+//   return ERC721_setBaseTokenURI({ baseTokenURI_ });
+// }
+
+// export async function setMaxPurchase({
+//   _value,
+// }: {
+//   _value: string;
+// }): Promise<void> {
+//   return ERC721_setMaxPurchase({ _value });
+// }
+
+// export async function setMaxTokenAmount({
+//   _value,
+// }: {
+//   _value: string;
+// }): Promise<void> {
+//   return ERC721_setMaxTokenAmount({ _value });
+// }
+
+// export async function setPrice({ _price }: { _price: string }): Promise<void> {
+//   return ERC721_setPrice({ _price });
+// }
+
+// export async function setReserveAmount({
+//   _value,
+// }: {
+//   _value: string;
+// }): Promise<void> {
+//   return ERC721_setReserveAmount({ _value });
+// }
+
+// export async function setTokenURI({
+//   tokenId,
+//   _tokenURL,
+// }: {
+//   tokenId: string;
+//   _tokenURL: string;
+// }): Promise<void> {
+//   return ERC721_setTokenURI({ tokenId, _tokenURL });
+// }
+
+// export async function transferFrom({
+//   _to,
+//   _from,
+//   _tokenId,
+// }: {
+//   _to: string;
+//   _from: string;
+//   _tokenId: string;
+// }): Promise<void> {
+//   return ERC721_transferFrom({ _to, _from, _tokenId });
+// }
+
+// export async function transferOwnership({
+//   newOwner,
+// }: {
+//   newOwner: string;
+// }): Promise<void> {
+//   return ERC721_transferOwnership({ newOwner });
+// }
+
+// export async function withdraw(): Promise<void> {
+//   return ERC721_withdraw();
+// }
+
+// get
+// export async function baseTokenURI(): Promise<void> {
+//   return ERC721_baseTokenURI();
+// }
+// export async function _reserved(): Promise<void> {
+//   return ERC721_reserved();
+// }
+
+// export async function admins({ address }: { address: string }): Promise<void> {
+//   return ERC721_admins(address);
+// }
+
+// export async function allfrozen(): Promise<void> {
+//   return ERC721_allfrozen();
+// }
+
+export async function getERC721Balance({
+  account,
+}: {
+  account: string;
+}): Promise<string> {
+  const balance = await ERC721_balanceOf({
+    account,
   });
+  return balance;
+}
+export async function getERC721Price(): Promise<string> {
+  return ERC721_price();
 }
 
-async function Shares_redeem(account: string, contract: string): Promise<void> {
-  const abi = new window.web3.eth.Contract(SHARES_ABI, contract);
-  return new Promise((resolve, reject) => {
-    abi.methods
-      .redeem()
-      .send({ from: account })
-      .once("confirmation", (confNumber: any, receipt: any) => resolve())
-      .once("error", reject);
-  });
+// export async function getApproved(tokenId: string): Promise<string> {
+//   return ERC721_getApproved(tokenId);
+// }
+// export async function isApprovedForAll({
+//   _owener,
+//   index,
+// }: {
+//   _owener: string;
+//   index: string;
+// }): Promise<string> {
+//   return ERC721_isApprovedForAll({
+//     _owener,
+//     index,
+//   });
+// }
+
+// export async function getMyAssets({
+//   _owener,
+//   index,
+// }: {
+//   _owener: string;
+//   index: string;
+// }): Promise<string> {
+//   return ERC721_getApproved({
+//     _owener,
+//     index,
+//   });
+// }
+
+export async function getMaxDBRPurchase(): Promise<string> {
+  return ERC721_maxDBRPurchase();
 }
 
-export async function getWrapper(address: string): Promise<string> {
-  const contract = await getNftfyContract();
-  return Nftfy_getWrapper(contract, address);
+export async function getMaxDBRs(): Promise<string> {
+  return ERC721_maxDBRs();
 }
 
-export async function wrap(
-  account: string,
-  contract: string,
-  tokenId: string,
-  amount: string
-): Promise<void> {
-  const address = await getNftfyContract();
-  let data = web3.utils.toHex(web3.utils.toWei(amount, "ether"));
-  data = data.substr(0, 2) + data.substr(2).padStart(64, "0");
-  await transferERC721(account, contract, address, tokenId, data);
+export async function getERC721Name(): Promise<string> {
+  return ERC721_name();
 }
 
-export async function getShares(
-  contract: string,
-  tokenId: string
-): Promise<string> {
-  return Wrapper_getShares(contract, tokenId);
+// export async function getERC721owner(): Promise<string> {
+//   return ERC721_owner();
+// }
+
+// export async function getERC721Of(tokenId: string): Promise<string> {
+//   return ERC721_Of(tokenId);
+// }
+
+export async function getERC721Symbol(): Promise<string> {
+  return ERC721_symbol();
 }
 
-export async function isRedeemable(contract: string): Promise<boolean> {
-  return Shares_isRedeemable(contract);
+export async function getERC721TokenURI(tokenId: string): Promise<string> {
+  return ERC721_tokenURI(tokenId);
 }
 
-export async function getSharePrice(contract: string): Promise<string> {
-  const price = await Shares_getSharePrice(contract);
-  return web3.utils.fromWei(price, "ether");
+export async function getERC721DBRTotalSupply(): Promise<string> {
+  return ERC721_DBRTotalSupply();
+}
+export async function getERC721SaleIsActive(): Promise<boolean> {
+  return ERC721_saleIsActive();
 }
 
-export async function release(
-  account: string,
-  contract: string,
-  amount: string
-): Promise<void> {
-  return Shares_release(account, contract, web3.utils.toWei(amount, "ether"));
-}
+// export async function tokenByIndex(index: string): Promise<boolean> {
+//   return ERC721_tokenByIndex(index);
+// }
 
-export async function redeem(account: string, contract: string): Promise<void> {
-  return Shares_redeem(account, contract);
-}
+// export async function tokenOfOwnerByIndex({
+//   owner,
+//   index,
+// }: {
+//   owner: string;
+//   index: string;
+// }): Promise<boolean> {
+//   return ERC721_tokenOfOwnerByIndex({ owner, index });
+// }
+
+// export async function reserved(): Promise<boolean> {
+//   return ERC721_reserved();
+// }
+
+// export async function tokenURI(): Promise<boolean> {
+//   return ERC721_tokenURI();
+// }
+
+// export async function totalSupply(): Promise<boolean> {
+//   return ERC721_totalSupply();
+// }

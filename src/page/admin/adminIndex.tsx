@@ -135,12 +135,19 @@ function AdminIndex() {
           <FormWrapWidget>
             <TitleWidget label="reserveDBRs" />
             <LabelWidget
-              label="receipt"
+              label="_to"
+              children={
+                <InputWidget value="" type="text" placeholder="_to  address" />
+              }
+            />
+            <TitleWidget label="reserveDBRs" />
+            <LabelWidget
+              label="_amount"
               children={
                 <InputWidget
                   value=""
                   type="text"
-                  placeholder="receipt  address"
+                  placeholder="_amount  uint256"
                 />
               }
             />
@@ -168,21 +175,6 @@ function AdminIndex() {
                   value=""
                   type="text"
                   placeholder="tokenId  uint246"
-                />
-              }
-            />
-            <BtnWidget label="transact" onClick={() => {}} />
-          </FormWrapWidget>
-
-          <FormWrapWidget>
-            <TitleWidget label="setAdminFeeRatio" subLable="设置管理费比率" />
-            <LabelWidget
-              label="_feeRatio"
-              children={
-                <InputWidget
-                  value=""
-                  type="text"
-                  placeholder="_feeRatio  uint256"
                 />
               }
             />

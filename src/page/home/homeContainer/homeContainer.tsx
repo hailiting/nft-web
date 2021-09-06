@@ -15,11 +15,9 @@ import {
   getERC721Price,
   postERC721Mint,
 } from "@/services/web3";
-import config from "@/config/index";
 import Toast from "@/components/toast";
 
 import "./homeContainer.less";
-const { nftAddress: contract } = config;
 function HomeContainer() {
   const [mintValue, setMintValue] = useState(1);
   const [accounts, setAccounts] = useState<string[] | null>(null);
@@ -28,7 +26,7 @@ function HomeContainer() {
   const [maxDBRPurchase, setMaxDBRPurchase] = useState(20);
   const [maxDBRs, setMaxDBRs] = useState(10000);
   const [ERC721DBRTotalSupply, setERC721DBRTotalSupply] = useState(10000);
-  const [ERC721SaleIsActive, setERC721SaleIsActive] = useState(false);
+  const [ERC721SaleIsActive, setERC721SaleIsActive] = useState(true);
 
   const [ERC721Name, setERC721Name] = useState("");
   const [ERC721Symbol, setERC721Symbol] = useState("");
@@ -47,14 +45,14 @@ function HomeContainer() {
   useEffect(() => {
     (async () => {
       setAccounts(await getAccounts());
-      setMaxDBRPurchase(Number(await getMaxDBRPurchase(contract)));
-      setMaxDBRs(Number(await getMaxDBRs(contract)));
-      setERC721DBRTotalSupply(Number(await getERC721DBRTotalSupply(contract)));
-      setERC721SaleIsActive(await getERC721SaleIsActive(contract));
+      setMaxDBRPurchase(Number(await getMaxDBRPurchase()));
+      setMaxDBRs(Number(await getMaxDBRs()));
+      setERC721DBRTotalSupply(Number(await getERC721DBRTotalSupply()));
+      setERC721SaleIsActive(await getERC721SaleIsActive());
 
-      setERC721Name(await getERC721Name(contract));
-      setERC721Symbol(await getERC721Symbol(contract));
-      setERC721Price(await getERC721Price(contract));
+      setERC721Name(await getERC721Name());
+      setERC721Symbol(await getERC721Symbol());
+      setERC721Price(await getERC721Price());
     })();
   }, []);
   useEffect(() => {
@@ -206,7 +204,6 @@ function HomeContainer() {
               postERC721Mint({
                 numberOfTokens: `${mintValue}`,
                 price: `${ERC721Price}`,
-                contract: contract,
                 account: account,
               });
             }}
