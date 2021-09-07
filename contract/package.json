@@ -28,7 +28,9 @@
     "find-up": "4.1.0",
     "fs": "0.0.1-security",
     "mkdirp": "^1.0.4",
-    "truffle-plugin-verify": "^0.5.12",
     "tsort": "0.0.1"
+  },
+  "devDependencies": {
+    "truffle-plugin-verify": "^0.5.14"
   }
 }
