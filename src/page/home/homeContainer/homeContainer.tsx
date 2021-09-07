@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import BtnWidget from "@/components/form/btnWidget";
 import {
   getAccounts,
-  getERC721Name,
-  getERC721Symbol,
+  name,
+  symbol,
   // getERC721Balance,
   // getERC721TokenIdByIndex,
   // getERC721TokenURI,
-  getMaxDBRPurchase,
-  getERC721DBRTotalSupply,
-  getERC721SaleIsActive,
-  getMaxDBRs,
+  maxDBRPurchase as getMaxDBRPurchase,
+  totalSupply,
+  saleIsActive,
+  maxDBRs as getMaxDBRs,
   getETHBalance,
-  getERC721Price,
-  postERC721Mint,
+  DBRPrice,
+  mint,
 } from "@/services/web3";
 import Toast from "@/components/toast";
 
@@ -47,12 +47,12 @@ function HomeContainer() {
       setAccounts(await getAccounts());
       setMaxDBRPurchase(Number(await getMaxDBRPurchase()));
       setMaxDBRs(Number(await getMaxDBRs()));
-      setERC721DBRTotalSupply(Number(await getERC721DBRTotalSupply()));
-      setERC721SaleIsActive(await getERC721SaleIsActive());
+      setERC721DBRTotalSupply(Number(await totalSupply()));
+      setERC721SaleIsActive(await saleIsActive());
 
-      setERC721Name(await getERC721Name());
-      setERC721Symbol(await getERC721Symbol());
-      setERC721Price(await getERC721Price());
+      setERC721Name(await name());
+      setERC721Symbol(await symbol());
+      setERC721Price(await DBRPrice());
     })();
   }, []);
   useEffect(() => {
@@ -201,7 +201,7 @@ function HomeContainer() {
                 Toast.show("合约还未开启，敬请期待！");
                 return false;
               }
-              postERC721Mint({
+              mint({
                 numberOfTokens: `${mintValue}`,
                 price: `${ERC721Price}`,
                 account: account,

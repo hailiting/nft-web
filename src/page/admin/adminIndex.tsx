@@ -9,15 +9,73 @@ import LabelWidget from "@/components/form/labelWidget";
 import InputWidget from "@/components/form/inputWidget";
 import BtnWidget from "@/components/form/btnWidget";
 
-import { postERC721FlipSaleState, getAccounts } from "@/services/web3";
+import {
+  flipSaleState,
+  getAccounts,
+  approve,
+  disableAdmin,
+  enableAdmin,
+  freeze,
+  freezeAll,
+  mint,
+  renounceOwnership,
+  reserveDBRs,
+  safeTransferFrom,
+  setApprovalForAll,
+  setBaseTokenURI,
+  setMaxPurchase,
+  setMaxTokenAmount,
+  setPrice,
+  setReserveAmount,
+  setTokenURI,
+  transferOwnership,
+  withdraw,
+  getERC721Balance,
+  allFrozen,
+  baseTokenURI,
+  DBRPrice,
+  totalSupply,
+  getApproved,
+  isApprovedForAll,
+  maxDBRPurchase,
+  maxDBRs,
+  name,
+  owner as erc721Owner,
+  ownerOf,
+  saleIsActive,
+  tokenByIndex,
+  symbol,
+  tokenURI,
+  walletOfOwner,
+} from "@/services/web3";
 
-import config from "@/config/index";
 import "./adminIndex.less";
+import toast from "@/components/toast";
 
-const { nftAddress: contract } = config;
 function AdminIndex() {
   const [accounts, setAccounts] = useState<string[] | null>(null);
   const [account, setAccount] = useState("");
+
+  // input 变量
+  const [to, setto] = useState("");
+  const [tokenId, settokenId] = useState("");
+  const [_addr, set_addr] = useState("");
+  const [numberOfTokens, setnumberOfTokens] = useState("");
+  const [_to, set_to] = useState("");
+  const [_amount, set_amount] = useState("");
+  const [from, setfrom] = useState("");
+  const [operator, setoperator] = useState("");
+  const [approved, setapproved] = useState("");
+  const [baseTokenURI_, setbaseTokenURI_] = useState("");
+  const [_value, set_value] = useState("");
+  const [_price, set_price] = useState("");
+  const [_reserveAmount, set_reserveAmount] = useState("");
+  const [_tokenURI, set_tokenURI] = useState("");
+  const [newOwner, setnewOwner] = useState("");
+  const [owner, setowner] = useState("");
+  const [index, setindex] = useState("");
+  const [_owner, set_owner] = useState("");
+
   useEffect(() => {
     (async () => {
       setAccounts(await getAccounts());
@@ -41,20 +99,36 @@ function AdminIndex() {
             <LabelWidget
               label="to"
               children={
-                <InputWidget value="" type="text" placeholder="to  address" />
+                <InputWidget
+                  value={to}
+                  type="text"
+                  placeholder="to  address"
+                  onChange={(e) => {
+                    setto(e.target.value);
+                  }}
+                />
               }
             />
             <LabelWidget
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  uint256"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await approve({ to, tokenId, account });
+                toast.show(`approve: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="disableAdmin" subLable="删除管理员" />
@@ -62,13 +136,25 @@ function AdminIndex() {
               label="_addr"
               children={
                 <InputWidget
-                  value=""
+                  value={_addr}
                   type="text"
                   placeholder="_addr  address"
+                  onChange={(e) => {
+                    set_addr(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await disableAdmin({
+                  _addr,
+                  account,
+                });
+                toast.show(`disableAdmin: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="enableAdmin" subLable="添加管理员" />
@@ -76,23 +162,35 @@ function AdminIndex() {
               label="_addr"
               children={
                 <InputWidget
-                  value=""
+                  value={_addr}
                   type="text"
                   placeholder="_addr  address"
+                  onChange={(e) => {
+                    set_addr(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await enableAdmin({
+                  _addr,
+                  account,
+                });
+                toast.show(`enableAdmin: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="flipSaleState" subLable="NFT 开关" />
             <BtnWidget
               label="transact"
-              onClick={() => {
-                postERC721FlipSaleState({
-                  contract: contract,
+              onClick={async () => {
+                const __value = await flipSaleState({
                   account: account,
                 });
+                toast.show(`flipSaleState: ${__value}`, 5000);
               }}
             />
           </FormWrapWidget>
@@ -102,56 +200,116 @@ function AdminIndex() {
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  uint256"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await freeze({
+                  tokenId,
+                  account,
+                });
+                toast.show(`freeze: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="freezeAll" subLable="冻结所有tokenId" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await freezeAll({
+                  account,
+                });
+                toast.show(`freezeAll: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
-            <TitleWidget label="mintDBRs" subLable="购买DBR" />
+            <TitleWidget label="mint" subLable="购买DBR" />
             <LabelWidget
               label="numberOfTokens"
               children={
                 <InputWidget
-                  value=""
+                  value={numberOfTokens}
                   type="text"
                   placeholder="numberOfTokens  uint256"
+                  onChange={(e) => {
+                    setnumberOfTokens(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const price = await DBRPrice();
+                mint({
+                  numberOfTokens,
+                  price,
+                  account,
+                });
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="renounceOwnership" subLable="放弃所有权" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await renounceOwnership({
+                  account,
+                });
+                toast.show(`renounceOwnership: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="reserveDBRs" />
             <LabelWidget
               label="_to"
               children={
-                <InputWidget value="" type="text" placeholder="_to  address" />
+                <InputWidget
+                  value={_to}
+                  type="text"
+                  placeholder="_to  address"
+                  onChange={(e) => {
+                    set_to(e.target.value);
+                  }}
+                />
               }
             />
-            <TitleWidget label="reserveDBRs" />
             <LabelWidget
               label="_amount"
               children={
                 <InputWidget
-                  value=""
+                  value={_amount}
                   type="text"
                   placeholder="_amount  uint256"
+                  onChange={(e) => {
+                    set_amount(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await reserveDBRs({
+                  account,
+                  _to,
+                  _amount,
+                });
+                toast.show(`reserveDBRs: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -159,26 +317,54 @@ function AdminIndex() {
             <LabelWidget
               label="from"
               children={
-                <InputWidget value="" type="text" placeholder="from  address" />
+                <InputWidget
+                  value={from}
+                  type="text"
+                  placeholder="from  address"
+                  onChange={(e) => {
+                    setfrom(e.target.value);
+                  }}
+                />
               }
             />
             <LabelWidget
               label="to"
               children={
-                <InputWidget value="" type="text" placeholder="to  address" />
+                <InputWidget
+                  value={to}
+                  type="text"
+                  placeholder="to  address"
+                  onChange={(e) => {
+                    setto(e.target.value);
+                  }}
+                />
               }
             />
             <LabelWidget
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  uint246"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await safeTransferFrom({
+                  account,
+                  _to: to,
+                  _from: from,
+                  _tokenId: tokenId,
+                });
+                toast.show(`safeTransferFrom: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -187,9 +373,12 @@ function AdminIndex() {
               label="operator"
               children={
                 <InputWidget
-                  value=""
+                  value={operator}
                   type="text"
                   placeholder="operator  address"
+                  onChange={(e) => {
+                    setoperator(e.target.value);
+                  }}
                 />
               }
             />
@@ -197,13 +386,26 @@ function AdminIndex() {
               label="approved"
               children={
                 <InputWidget
-                  value=""
+                  value={approved}
                   type="text"
                   placeholder="approved  bool"
+                  onChange={(e) => {
+                    setapproved(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setApprovalForAll({
+                  operator,
+                  approved,
+                  account,
+                });
+                toast.show(`setApprovalForAll: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -212,13 +414,25 @@ function AdminIndex() {
               label="baseTokenURI_"
               children={
                 <InputWidget
-                  value=""
+                  value={baseTokenURI_}
                   type="text"
                   placeholder="baseTokenURI_  string"
+                  onChange={(e) => {
+                    setbaseTokenURI_(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setBaseTokenURI({
+                  baseTokenURI_,
+                  account,
+                });
+                toast.show(`setBaseTokenURI: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -230,13 +444,25 @@ function AdminIndex() {
               label="_value"
               children={
                 <InputWidget
-                  value=""
+                  value={_value}
                   type="text"
                   placeholder="_value  uint256"
+                  onChange={(e) => {
+                    set_value(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setMaxPurchase({
+                  _value,
+                  account,
+                });
+                toast.show(`setMaxPurchase: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -245,13 +471,25 @@ function AdminIndex() {
               label="_value"
               children={
                 <InputWidget
-                  value=""
+                  value={_value}
                   type="text"
                   placeholder="_value  uint256"
+                  onChange={(e) => {
+                    set_value(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setMaxTokenAmount({
+                  _value,
+                  account,
+                });
+                toast.show(`setMaxTokenAmount: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -260,13 +498,25 @@ function AdminIndex() {
               label="_price"
               children={
                 <InputWidget
-                  value=""
+                  value={_price}
                   type="text"
                   placeholder="_price  uint256"
+                  onChange={(e) => {
+                    set_price(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setPrice({
+                  _price,
+                  account,
+                });
+                toast.show(`setPrice: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -275,13 +525,25 @@ function AdminIndex() {
               label="_reserveAmount"
               children={
                 <InputWidget
-                  value=""
+                  value={_reserveAmount}
                   type="text"
                   placeholder="_reserveAmount  uint256"
+                  onChange={(e) => {
+                    set_reserveAmount(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setReserveAmount({
+                  _value,
+                  account,
+                });
+                toast.show(`setReserveAmount: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -290,9 +552,12 @@ function AdminIndex() {
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  uint256"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
@@ -300,13 +565,26 @@ function AdminIndex() {
               label="_tokenURI"
               children={
                 <InputWidget
-                  value=""
+                  value={_tokenURI}
                   type="text"
                   placeholder="_tokenURI  string"
+                  onChange={(e) => {
+                    set_tokenURI(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await setTokenURI({
+                  tokenId,
+                  _tokenURI,
+                  account,
+                });
+                toast.show(`setTokenURI: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -319,18 +597,38 @@ function AdminIndex() {
               label="newOwner"
               children={
                 <InputWidget
-                  value=""
+                  value={newOwner}
                   type="text"
                   placeholder="newOwner  address"
+                  onChange={(e) => {
+                    setnewOwner(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await transferOwnership({
+                  newOwner,
+                  account,
+                });
+                toast.show(`transferOwnership: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
             <TitleWidget label="withdraw" subLable="提币" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await withdraw({
+                  account,
+                });
+                toast.show(`withdraw: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
         </div>
       </div>
@@ -338,22 +636,14 @@ function AdminIndex() {
         <TitleWidget label="查询" />
         <div className="contianer">
           <FormWrapWidget>
-            <TitleWidget label="adminFeeRatio" subLable="某个地址的分红比例" />
-            <LabelWidget
-              label="admin"
-              children={
-                <InputWidget
-                  value=""
-                  type="text"
-                  placeholder="admin  address"
-                />
-              }
-            />
-            <BtnWidget label="transact" onClick={() => {}} />
-          </FormWrapWidget>
-          <FormWrapWidget>
             <TitleWidget label="allFrozen" subLable="nft是否开启" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await allFrozen();
+                toast.show(`allFrozen: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget
@@ -364,25 +654,54 @@ function AdminIndex() {
               label="owner"
               children={
                 <InputWidget
-                  value=""
+                  value={owner}
                   type="text"
                   placeholder="owner  address"
+                  onChange={(e) => {
+                    setowner(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const _value = await getERC721Balance({
+                  account,
+                });
+                toast.show(`balanceOf ${owner}: ${_value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
-            <TitleWidget label="baseTokenURL" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <TitleWidget label="baseTokenURI" />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await baseTokenURI();
+                toast.show(`baseTokenURI: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="DBRPrice" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const _value = await DBRPrice();
+                toast.show(`DBRPrice: ${_value} wei`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
-            <TitleWidget label="DBRTotalSupply" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <TitleWidget label="totalSupply" />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const _value = await totalSupply();
+                toast.show(`totalSupply: ${_value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -391,13 +710,22 @@ function AdminIndex() {
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  uint256"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await getApproved(tokenId);
+                toast.show(`getApproved: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             {/* _operatorApprovals[owner][operator]; */}
@@ -406,9 +734,12 @@ function AdminIndex() {
               label="owner"
               children={
                 <InputWidget
-                  value=""
+                  value={owner}
                   type="text"
                   placeholder="owner  address"
+                  onChange={(e) => {
+                    setowner(e.target.value);
+                  }}
                 />
               }
             />
@@ -416,32 +747,68 @@ function AdminIndex() {
               label="operator"
               children={
                 <InputWidget
-                  value=""
+                  value={operator}
                   type="text"
                   placeholder="operator  address"
+                  onChange={(e) => {
+                    setoperator(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await isApprovedForAll({
+                  _owener: owner,
+                  index,
+                });
+                toast.show(`isApprovedForAll: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
             <TitleWidget label="maxDBRPurchase" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await maxDBRPurchase();
+                toast.show(`maxDBRPurchase: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
             <TitleWidget label="maxDBRs" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await maxDBRs();
+                toast.show(`maxDBRs: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
             <TitleWidget label="name" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await name();
+                toast.show(`name: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="owner" subLable="当前合约持有者" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await erc721Owner();
+                toast.show(`erc721Owner: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -450,47 +817,44 @@ function AdminIndex() {
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  address"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await ownerOf(tokenId);
+                toast.show(`ownerOf: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
-          <FormWrapWidget>
-            <TitleWidget label="reserveAmount" />
-            <BtnWidget label="transact" onClick={() => {}} />
-          </FormWrapWidget>
-
-          <FormWrapWidget>
-            <TitleWidget label="reserveAmount" />
-            <BtnWidget label="transact" onClick={() => {}} />
-          </FormWrapWidget>
           <FormWrapWidget>
             <TitleWidget label="saleIsActive" subLable="NFT是否可交易" />
-            <BtnWidget label="transact" onClick={() => {}} />
-          </FormWrapWidget>
-
-          <FormWrapWidget>
-            <TitleWidget label="supportsInterface" />
-            <LabelWidget
-              label="interfaceId"
-              children={
-                <InputWidget
-                  value=""
-                  type="text"
-                  placeholder="interfaceId  bytes4"
-                />
-              }
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await saleIsActive();
+                toast.show(`saleIsActive: ${__value}`, 5000);
+              }}
             />
-            <BtnWidget label="transact" onClick={() => {}} />
           </FormWrapWidget>
 
           <FormWrapWidget>
             <TitleWidget label="symbol" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await symbol();
+                toast.show(`symbol: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -502,38 +866,22 @@ function AdminIndex() {
               label="index"
               children={
                 <InputWidget
-                  value=""
+                  value={index}
                   type="text"
                   placeholder="index  uint256"
+                  onChange={(e) => {
+                    setindex(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
-          </FormWrapWidget>
-
-          <FormWrapWidget>
-            <TitleWidget label="tokenOfOwnerByIndex" subLable="查询tokenId" />
-            <LabelWidget
-              label="owner"
-              children={
-                <InputWidget
-                  value=""
-                  type="text"
-                  placeholder="owner  address"
-                />
-              }
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await tokenByIndex({ index });
+                toast.show(`tokenByIndex: ${__value}`, 5000);
+              }}
             />
-            <LabelWidget
-              label="index"
-              children={
-                <InputWidget
-                  value=""
-                  type="text"
-                  placeholder="index  uint256"
-                />
-              }
-            />
-            <BtnWidget label="transact" onClick={() => {}} />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -542,18 +890,33 @@ function AdminIndex() {
               label="tokenId"
               children={
                 <InputWidget
-                  value=""
+                  value={tokenId}
                   type="text"
                   placeholder="tokenId  uint256"
+                  onChange={(e) => {
+                    settokenId(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await tokenURI(tokenId);
+                toast.show(`tokenURI: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
             <TitleWidget label="totalSupply" subLable="剩余" />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await totalSupply();
+                toast.show(`totalSupply: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
 
           <FormWrapWidget>
@@ -565,13 +928,22 @@ function AdminIndex() {
               label="_owner"
               children={
                 <InputWidget
-                  value=""
+                  value={_owner}
                   type="text"
                   placeholder="_owner  address"
+                  onChange={(e) => {
+                    set_owner(e.target.value);
+                  }}
                 />
               }
             />
-            <BtnWidget label="transact" onClick={() => {}} />
+            <BtnWidget
+              label="transact"
+              onClick={async () => {
+                const __value = await walletOfOwner({ _owner });
+                toast.show(`walletOfOwner: ${__value}`, 5000);
+              }}
+            />
           </FormWrapWidget>
         </div>
       </div>

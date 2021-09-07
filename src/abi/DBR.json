@@ -2,9 +2,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
+        "internalType": "address[]",
         "name": "_admin",
-        "type": "address"
+        "type": "address[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -196,7 +196,20 @@
   },
   {
     "inputs": [],
-    "name": "DBRTotalSupply",
+    "name": "_baseTokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "_reserved",
     "outputs": [
       {
         "internalType": "uint256",
@@ -208,13 +221,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "adminFeeRatio",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "name": "adminList",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -284,19 +303,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "baseTokenURI",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -452,7 +458,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "numberOfTokens",
+        "name": "num",
         "type": "uint256"
       }
     ],
@@ -514,24 +520,16 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "reserveAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "receipt",
+        "name": "_to",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
       }
     ],
     "name": "reserveDBRs",
@@ -619,19 +617,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_feeRatio",
-        "type": "uint256"
-      }
-    ],
-    "name": "setAdminFeeRatio",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "operator",
         "type": "address"
@@ -703,7 +688,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_reserveAmount",
+        "name": "__reserved",
         "type": "uint256"
       }
     ],

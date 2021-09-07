@@ -1,4 +1,4 @@
-import React, { AllHTMLAttributes } from "react";
+import React, { AllHTMLAttributes, ChangeEventHandler } from "react";
 import "./inputWidget.less";
 interface IInputWidgetProps extends AllHTMLAttributes<HTMLElement> {
   value: string | ReadonlyArray<string> | number | undefined;
@@ -6,9 +6,18 @@ interface IInputWidgetProps extends AllHTMLAttributes<HTMLElement> {
   type: string;
   disabled?: boolean | undefined;
   readOnly?: boolean | undefined;
+  onChange?: ChangeEventHandler<any> | undefined;
 }
 function InputWidget(props: IInputWidgetProps) {
-  const { value, disabled, readOnly, placeholder, type, alt } = props;
+  const {
+    value,
+    disabled,
+    readOnly,
+    placeholder,
+    type,
+    alt,
+    onChange: _onChange,
+  } = props;
   return (
     <div className="inputWidget">
       <input
@@ -18,6 +27,12 @@ function InputWidget(props: IInputWidgetProps) {
         disabled={disabled}
         placeholder={placeholder}
         type={type}
+        onChange={(e) => {
+          e.persist();
+          if (_onChange) {
+            _onChange(e);
+          }
+        }}
       />
     </div>
   );
