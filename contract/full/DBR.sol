@@ -1497,7 +1497,7 @@ contract DBR is ERC721Enumerable, Ownable {
         _;
     }
 
-    constructor(address[] memory _admin) ERC721("Dont Buy Rocks", "DBR") {
+    constructor(address[] memory _admin) ERC721("DontBuyRocks", "DBR") {
         for (uint256 i = 0; i < _admin.length; i++) {
             admins[_admin[i]] = true;
         }

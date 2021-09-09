@@ -201,6 +201,8 @@ function HomeContainer() {
                 Toast.show("合约还未开启，敬请期待！");
                 return false;
               }
+              console.log(mintValue);
+              console.log(ERC721Price);
               mint({
                 numberOfTokens: `${mintValue}`,
                 price: `${ERC721Price}`,

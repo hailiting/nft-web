@@ -1,17 +1,27 @@
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-const { infuraProjectId, mnemonic } = require("./secrets.json");
+const {
+  infuraProjectId,
+  mnemonic,
+  // account,
+  etherscanApiKey,
+} = require("./secrets.json");
 
 module.exports = {
   networks: {
     rinkeby: {
-      provider: function () {
-        return new HDWalletProvider(
-          mnemonic,
-          `https://rinkeby.infura.io/v3/${infuraProjectId}`,
-          "0x64a339884648c7c99d293Af4c95E39982A65cd4E"
-        );
-      },
-      network_id: "4",
+      provider: () =>
+        new HDWalletProvider({
+          mnemonic: mnemonic,
+          providerOrUrl: `https://rinkeby.infura.io/v3/${infuraProjectId}`,
+          addressIndex: 3,
+          // numberOfAddresses: 1,
+          // shareNonce: true,
+          derivationPath: "m/44'/1'/0'/2/",
+          chainId: "4",
+        }),
+      network_id: 4,
+      gasPrice: 10e9,
+      skipDryRun: true,
     },
   },
   // Set default mocha options here, use special reporters etc.
@@ -24,12 +34,12 @@ module.exports = {
   compilers: {
     solc: {
       version: "0.8.0",
-      settings: {
-        optimizer: {
-          enabled: true,
-          runs: 20000,
-        },
-      },
+      // settings: {
+      //   optimizer: {
+      //     enabled: true,
+      //     runs: 20000,
+      //   },
+      // },
     },
   },
 
@@ -53,5 +63,8 @@ module.exports = {
   //   }
   // }
   // }
-  // api_keys: ["truffle-plugin-verify"],
+  plugins: ["truffle-plugin-verify"],
+  api_keys: {
+    etherscan: etherscanApiKey,
+  },
 };
